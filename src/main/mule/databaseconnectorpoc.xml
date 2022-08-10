@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="842d9ab0-2714-4cd1-a6dc-0c4d392ac149" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root@1234" database="world" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dba1468e-b162-46eb-ba6a-6df56a4b0873" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="databaseconnectorpocFlow" doc:id="f37e861a-815c-41cd-9e4f-11a2d8544e54" >
+		<http:listener doc:name="Listener" doc:id="ed5c585f-4f9b-493b-84b3-675a3bcd86c2" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="90fcc9ee-fb0d-4ac9-8e08-317fb1ec4be7" />
+		<db:select doc:name="Select" doc:id="5b79ecb7-4528-4edc-9682-8f1eb307c81c" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from city limit 3]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="1d607ac3-0e78-48f5-825a-9e8d9ba8afe8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
